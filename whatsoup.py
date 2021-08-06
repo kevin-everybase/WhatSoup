@@ -655,6 +655,8 @@ def scrape_chat(driver):
             f"Warning! {len(messages)} messages scraped but {chat_messages_count} expected.")
 
     # Create a dict with chat date as key and empty list as value which will store all msgs for that date
+
+    # Media object has no datetime TODO
     messages_dict = {msg_list['datetime'].strftime(
         "%m/%d/%Y"): [] for msg_list in messages}
 
@@ -820,17 +822,24 @@ def parse_datetime(text, time_only=False):
                 return datetime.strptime(text, fmt)
             except ValueError:
                 continue
-        raise ValueError(
-            f"{text} does not match a valid datetime format of '%m/%d/%Y %I:%M %p' or '%Y-%m-%d %I:%M %p' or '%d/%m/%Y %H:%M' or '%d-%m-%Y %H:%M'. Make sure your WhatsApp language settings on your phone are set to English.")
+        # raise ValueError(
+            # f"{text} does not match a valid datetime format of '%m/%d/%Y %I:%M %p' or '%Y-%m-%d %I:%M %p' or '%d/%m/%Y %H:%M' or '%d-%m-%Y %H:%M'. Make sure your WhatsApp language settings on your phone are set to English.")
+
+        # Return epoch if we have an error
+        return datetime.utcfromtimestamp(0)
 
     # Try parsing when text is some time value e.g. 2:35 PM
     else:
-        try:
-            return datetime.strptime(text, '%I:%M %p')
-        except ValueError:
-            pass
-        raise ValueError(
-            f"{text} does not match expected time format of '%I:%M %p'. Make sure your WhatsApp language settings on your phone are set to English.")
+        for fmt in ('%I:%M %p', '%H:%M'):
+            try:
+                return datetime.strptime(text, fmt)
+            except ValueError:
+                continue
+        # raise ValueError(
+            # f"{text} does not match expected time format of '%I:%M %p' or '%H:%M'. Make sure your WhatsApp language settings on your phone are set to English.")
+
+        # Return epoch if we have an error
+        return datetime.utcfromtimestamp(0)
 
 
 def is_media_in_message(message):

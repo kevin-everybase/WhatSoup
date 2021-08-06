@@ -815,13 +815,13 @@ def parse_datetime(text, time_only=False):
 
     # Try parsing when text is some datetime value e.g. 2/15/2021 2:35 P.M.
     if not time_only:
-        for fmt in ('%m/%d/%Y %I:%M %p', '%Y-%m-%d %I:%M %p'):
+        for fmt in ('%m/%d/%Y %I:%M %p', '%Y-%m-%d %I:%M %p', '%d/%m/%Y %H:%M', '%d-%m-%Y %H:%M'):
             try:
                 return datetime.strptime(text, fmt)
             except ValueError:
                 continue
         raise ValueError(
-            f"{text} does not match a valid datetime format of '%m/%d/%Y %I:%M %p' or '%Y-%m-%d %I:%M %p'. Make sure your WhatsApp language settings on your phone are set to English.")
+            f"{text} does not match a valid datetime format of '%m/%d/%Y %I:%M %p' or '%Y-%m-%d %I:%M %p' or '%d/%m/%Y %H:%M' or '%d-%m-%Y %H:%M'. Make sure your WhatsApp language settings on your phone are set to English.")
 
     # Try parsing when text is some time value e.g. 2:35 PM
     else:
